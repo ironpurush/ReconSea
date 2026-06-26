@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReconSea — Scan Console</title>
+<link rel="stylesheet" href="/static/css/main.css">
+<link rel="stylesheet" href="/static/css/scan.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="/" class="nav-logo"><span class="logo-icon">⬡</span><span class="logo-txt">ReconSea</span></a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Dashboard</a>
+      <a href="/reports" class="nav-link">Reports</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-ghost btn-sm" id="stopScanBtn" style="color:#ef4444;display:none">⏹ Stop</button>
+    </div>
+  </div>
+</nav>
+
+<main class="scan-main">
+  <div class="scan-header">
+    <div class="scan-header-left">
+      <div class="scan-status-pill" id="scanStatusPill">
+        <span class="pulse-dot"></span><span id="scanStatusText">Initializing...</span>
+      </div>
+      <h1 class="scan-target" id="scanTarget">Loading...</h1>
+      <div class="scan-meta-row">
+        <span class="scan-meta-item">ID: <code id="scanIdDisplay">—</code></span>
+        <span class="scan-meta-item">Started: <span id="scanStarted">—</span></span>
+        <span class="scan-meta-item">Duration: <span id="scanDuration">0s</span></span>
+      </div>
+    </div>
+    <div class="scan-header-right">
+      <div class="progress-ring-wrap">
+        <svg viewBox="0 0 80 80" class="progress-ring">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="6"/>
+          <circle cx="40" cy="40" r="34" fill="none" stroke="url(#pg)" stroke-width="6"
+                  stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6"
+                  id="progressCircle" transform="rotate(-90 40 40)"/>
+          <defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient></defs>
+        </svg>
+        <div class="progress-pct" id="progressPct">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-val" id="kpi-subdomains-val">—</div><div class="kpi-label">Subdomains</div></div>
+    <div class="kpi-card"><div class="kpi-val" id="kpi-live-val">—</div><div class="kpi-label">Live Hosts</div></div>
+    <div class="kpi-card"><div class="kpi-val" id="kpi-paths-val">—</div><div class="kpi-label">Paths</div></div>
+    <div class="kpi-card"><div class="kpi-val" id="kpi-params-val">—</div><div class="kpi-label">Parameters</div></div>
+    <div class="kpi-card"><div class="kpi-val" id="kpi-tech-val">—</div><div class="kpi-label">Technologies</div></div>
+    <div class="kpi-card"><div class="kpi-val" id="kpi-js-val">—</div><div class="kpi-label">JS Files</div></div>
+    <div class="kpi-card kpi-danger"><div class="kpi-val" id="kpi-secrets-val">—</div><div class="kpi-label">Findings</div></div>
+  </div>
+
+  <div class="modules-status-row">
+    <div class="module-status-card pending" id="mstat-surface_discovery"><span>🌐</span><span class="mstat-name">Surface Discovery</span><span class="mstat-badge">pending</span></div>
+    <div class="module-status-card pending" id="mstat-live_hosts"><span>📡</span><span class="mstat-name">Live Hosts</span><span class="mstat-badge">pending</span></div>
+    <div class="module-status-card pending" id="mstat-path_discovery"><span>🗺️</span><span class="mstat-name">Path Discovery</span><span class="mstat-badge">pending</span></div>
+    <div class="module-status-card pending" id="mstat-crawl"><span>🕷️</span><span class="mstat-name">Crawl</span><span class="mstat-badge">pending</span></div>
+    <div class="module-status-card pending" id="mstat-parameters"><span>⚙️</span><span class="mstat-name">Parameters</span><span class="mstat-badge">pending</span></div>
+    <div class="module-status-card pending" id="mstat-tech_fingerprint"><span>🔬</span><span class="mstat-name">Tech Stack</span><span class="mstat-badge">pending</span></div>
+    <div class="module-status-card pending" id="mstat-js_intelligence"><span>🔍</span><span class="mstat-name">JS Intelligence</span><span class="mstat-badge">pending</span></div>
+  </div>
+
+  <div class="scan-content">
+    <div class="activity-panel">
+      <div class="panel-header">
+        <span class="panel-title">Live Activity</span>
+        <button class="btn-micro" id="clearLogBtn">Clear</button>
+      </div>
+      <div class="activity-log" id="activityLog">
+        <div class="log-entry log-info"><span class="log-time">—</span><span class="log-msg">Waiting for scan...</span></div>
+      </div>
+    </div>
+
+    <div class="results-panel">
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="overview">Overview</button>
+        <button class="tab-btn" data-tab="subdomains">Subdomains</button>
+        <button class="tab-btn" data-tab="live_hosts">Live Hosts</button>
+        <button class="tab-btn" data-tab="paths">Paths</button>
+        <button class="tab-btn" data-tab="parameters">Parameters</button>
+        <button class="tab-btn" data-tab="tech">Tech Stack</button>
+        <button class="tab-btn" data-tab="js">JS Intel</button>
+      </div>
+
+      <div class="tab-content active" id="tab-overview">
+        <div class="overview-grid">
+          <div class="overview-card"><h3>Scan Progress</h3><div id="overviewProgress">Initializing...</div></div>
+          <div class="overview-card"><h3>Quick Wins</h3><div id="overviewQuickWins">Will appear as scan runs...</div></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-subdomains">
+        <div class="tab-toolbar">
+          <input type="text" class="search-input" id="search-subdomains" placeholder="Search subdomains...">
+          <button class="btn-micro" onclick="copyColumn('tbl-subdomains', 0)">Copy All</button>
+        </div>
+        <div class="table-wrap">
+          <table class="results-tbl" id="tbl-subdomains">
+            <thead><tr><th>Host</th><th>IP</th><th>Source</th><th>Live</th></tr></thead>
+            <tbody id="tbody-subdomains"><tr class="empty-row"><td colspan="4">Waiting for surface discovery...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-live_hosts">
+        <div class="tab-toolbar">
+          <input type="text" class="search-input" id="search-live_hosts" placeholder="Search hosts...">
+          <button class="btn-micro" onclick="copyColumn('tbl-live_hosts', 0)">Copy URLs</button>
+        </div>
+        <div class="table-wrap">
+          <table class="results-tbl" id="tbl-live_hosts">
+            <thead><tr><th>URL</th><th>Status</th><th>Title</th><th>Server</th><th>Technologies</th></tr></thead>
+            <tbody id="tbody-live_hosts"><tr class="empty-row"><td colspan="5">Waiting for live host probing...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-paths">
+        <div class="tab-toolbar">
+          <input type="text" class="search-input" id="search-paths" placeholder="Search paths...">
+          <label class="checkbox-label"><input type="checkbox" id="filter-interesting"> Interesting only</label>
+        </div>
+        <div class="table-wrap">
+          <table class="results-tbl" id="tbl-paths">
+            <thead><tr><th>Path</th><th>Status</th><th>Length</th><th>Severity</th></tr></thead>
+            <tbody id="tbody-paths"><tr class="empty-row"><td colspan="4">Waiting for path discovery...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-parameters">
+        <div class="tab-toolbar">
+          <input type="text" class="search-input" id="search-parameters" placeholder="Search parameters...">
+          <button class="btn-micro" onclick="copyColumn('tbl-parameters', 0)">Copy URLs</button>
+        </div>
+        <div class="table-wrap">
+          <table class="results-tbl" id="tbl-parameters">
+            <thead><tr><th>URL</th><th>Parameters</th><th>Tags</th></tr></thead>
+            <tbody id="tbody-parameters"><tr class="empty-row"><td colspan="3">Waiting for parameter discovery...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-tech">
+        <div class="tab-toolbar">
+          <input type="text" class="search-input" id="search-tech" placeholder="Search technologies...">
+        </div>
+        <div class="table-wrap">
+          <table class="results-tbl" id="tbl-tech">
+            <thead><tr><th>Host</th><th>Technology</th><th>Category</th><th>Confidence</th></tr></thead>
+            <tbody id="tbody-tech"><tr class="empty-row"><td colspan="4">Waiting for tech fingerprinting...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-js">
+        <div class="js-subsections">
+          <div class="subsection-title">JS Files (<span id="js-files-count">0</span>)</div>
+          <div class="table-wrap" style="margin-bottom:20px">
+            <table class="results-tbl" id="tbl-jsfiles">
+              <thead><tr><th>URL</th><th>Host</th><th>Size</th></tr></thead>
+              <tbody id="tbody-js-files"><tr class="empty-row"><td colspan="3">No JS files yet...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="subsection-title">
+            Potential Findings (<span id="secrets-count">0</span>)
+            <span class="caution-note">⚠ Manual verification required</span>
+          </div>
+          <div class="table-wrap">
+            <table class="results-tbl" id="tbl-secrets">
+              <thead><tr><th>URL</th><th>Pattern</th><th>Severity</th><th>Evidence</th></tr></thead>
+              <tbody id="tbody-secrets"><tr class="empty-row"><td colspan="4">No findings yet...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scan-complete-banner" id="scanCompleteBanner" style="display:none">
+    <div class="complete-inner">
+      <div class="complete-icon">✓</div>
+      <div class="complete-text">
+        <strong>Scan Complete</strong>
+        <span id="completeSummary">Results ready</span>
+      </div>
+      <div class="complete-actions">
+        <a id="reportHtmlLink" href="#" class="btn-primary btn-sm" target="_blank">HTML Report</a>
+        <a id="reportJsonLink" href="#" class="btn-ghost btn-sm" target="_blank">JSON</a>
+        <a id="reportCsvLink" href="#" class="btn-ghost btn-sm" target="_blank">CSV</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="footer-logo">⬡ ReconSea</span><span class="sep">·</span>
+    <span>Created by <strong>Sagar Jondhale aka IronPurush</strong></span>
+  </div>
+</footer>
+
+<script src="/static/js/app.js"></script>
+<script src="/static/js/scan.js"></script>
+</body>
+</html>

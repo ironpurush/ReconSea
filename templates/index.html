@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReconSea — Navigate the Attack Surface</title>
+<link rel="stylesheet" href="/static/css/main.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="/" class="nav-logo"><span class="logo-icon">⬡</span><span class="logo-txt">ReconSea</span></a>
+    <div class="nav-links">
+      <a href="/" class="nav-link active">Dashboard</a>
+      <a href="/reports" class="nav-link">Reports</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-ghost btn-sm" id="themeToggle" title="Toggle theme">☀</button>
+    </div>
+  </div>
+</nav>
+
+<main class="main-content">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Bug Bounty Recon Platform</div>
+      <h1 class="hero-title">Navigate the<br><span class="gradient-text">Attack Surface</span></h1>
+      <p class="hero-sub">Enter a target to run a complete web reconnaissance workflow — subdomains, live assets, hidden paths, technologies, and JavaScript intelligence.</p>
+
+      <div class="scan-card">
+        <div class="scan-card-header"><span>🎯</span><span>New Reconnaissance Scan</span></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Target Domain</label>
+            <div class="input-wrapper">
+              <span class="input-prefix">⊙</span>
+              <input type="text" id="targetInput" class="form-input mono" placeholder="example.com or *.example.com" autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Engagement Name <span class="optional">(optional)</span></label>
+            <input type="text" id="engagementInput" class="form-input" placeholder="My Bug Bounty Program">
+          </div>
+        </div>
+
+        <div class="modules-section">
+          <div class="modules-header">
+            <span class="form-label">Recon Modules</span>
+            <div class="module-controls">
+              <button class="btn-micro" id="selectAllModules">Select All</button>
+              <button class="btn-micro" id="clearModules">Clear</button>
+            </div>
+          </div>
+          <div class="modules-grid" id="modulesGrid">
+            <label class="module-card selected" data-module="surface_discovery">
+              <input type="checkbox" value="surface_discovery" checked hidden>
+              <span class="module-icon">🌐</span><span class="module-name">Surface Discovery</span><span class="module-desc">Subdomains & DNS</span>
+            </label>
+            <label class="module-card selected" data-module="live_hosts">
+              <input type="checkbox" value="live_hosts" checked hidden>
+              <span class="module-icon">📡</span><span class="module-name">Live Hosts</span><span class="module-desc">HTTP Profiling</span>
+            </label>
+            <label class="module-card selected" data-module="path_discovery">
+              <input type="checkbox" value="path_discovery" checked hidden>
+              <span class="module-icon">🗺️</span><span class="module-name">Path Discovery</span><span class="module-desc">Hidden Content</span>
+            </label>
+            <label class="module-card selected" data-module="crawl">
+              <input type="checkbox" value="crawl" checked hidden>
+              <span class="module-icon">🕷️</span><span class="module-name">Endpoint Crawl</span><span class="module-desc">Pages & JS Files</span>
+            </label>
+            <label class="module-card selected" data-module="parameters">
+              <input type="checkbox" value="parameters" checked hidden>
+              <span class="module-icon">⚙️</span><span class="module-name">Parameters</span><span class="module-desc">Testable Inputs</span>
+            </label>
+            <label class="module-card selected" data-module="tech_fingerprint">
+              <input type="checkbox" value="tech_fingerprint" checked hidden>
+              <span class="module-icon">🔬</span><span class="module-name">Tech Stack</span><span class="module-desc">Fingerprinting</span>
+            </label>
+            <label class="module-card selected" data-module="js_intelligence">
+              <input type="checkbox" value="js_intelligence" checked hidden>
+              <span class="module-icon">🔍</span><span class="module-name">JS Intelligence</span><span class="module-desc">Secrets & APIs</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="scan-actions">
+          <button class="btn-primary" id="startScanBtn"><span>▶</span> Start Recon</button>
+          <span class="scan-tip">Results stream live as each module completes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="recent-section">
+    <div class="section-header-row">
+      <h2 class="section-title-sm">Recent Scans</h2>
+      <a href="/reports" class="link-muted">View all →</a>
+    </div>
+    <div id="recentScans" class="recent-grid"><div class="loading-placeholder">Loading...</div></div>
+  </section>
+</main>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="footer-logo">⬡ ReconSea</span><span class="sep">·</span>
+    <span>Navigate the Attack Surface</span><span class="sep">·</span>
+    <span>Created by <strong>Sagar Jondhale aka IronPurush</strong></span><span class="sep">·</span>
+    <span class="footer-note">For authorized security testing only</span>
+  </div>
+</footer>
+
+<script src="/static/js/app.js"></script>
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>
